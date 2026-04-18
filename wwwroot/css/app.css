@@ -1,0 +1,22 @@
+/* Reset total para eliminar bordes y márgenes molestos */
+html, body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #0f172a; /* Fondo oscuro base */
+}
+
+/* Arreglo para que el texto no se vea azul por defecto */
+a {
+    text-decoration: none !important;
+}
+
+/* Esto elimina el cuadro blanco que rodea el contenido en la plantilla original */
+.page {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}

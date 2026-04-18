@@ -1,0 +1,217 @@
+﻿@page "/razones/metodo-3"
+@using System.Globalization
+@rendermode InteractiveServer
+
+<div class="animate-fadeIn">
+    <!-- Encabezado -->
+    <div class="d-flex align-items-center mb-4">
+        <a href="razones" class="btn btn-outline-secondary btn-sm me-3">
+            <i class="bi bi-arrow-left"></i> Volver al Menú
+        </a>
+        <h3 class="text-emerald fw-bold mb-0">Método 3: Partes Alícuotas</h3>
+    </div>
+
+    <div class="row">
+        <!-- Panel de Configuración -->
+        <div class="col-lg-4">
+            <div class="content-card mb-4">
+                <h4 class="mb-4 text-white"><i class="bi bi-input-cursor-text me-2"></i>Entrada de Datos</h4>
+
+                <div class="form-group mb-4">
+                    <label class="text-muted small fw-bold">CANTIDAD A REPARTIR (COP)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-secondary text-emerald">$</span>
+                        <input type="number" class="form-control" @bind="montoTotal" @bind:event="oninput" />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <label class="text-muted small fw-bold">ÍNDICES DE REPARTO</label>
+                    <button class="btn btn-sm btn-emerald" @onclick="AgregarIndividuo">
+                        <i class="bi bi-plus-lg"></i> Añadir
+                    </button>
+                </div>
+
+                <div class="scroll-area">
+                    @for (int i = 0; i < individuos.Count; i++)
+                    {
+                        var index = i;
+                        <div class="individuo-item mb-2 animate-fadeIn">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-dark border-secondary text-muted">ID</span>
+                                <input type="text" class="form-control w-50" @bind="individuos[index].Nombre" placeholder="Nombre" />
+                                <input type="number" class="form-control" @bind="individuos[index].Indice" @bind:event="oninput" placeholder="Índice" />
+                                <button class="btn btn-outline-danger border-secondary" @onclick="() => EliminarIndividuo(index)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Panel de Fórmulas -->
+            <div class="content-card formula-display">
+                <h5 class="text-emerald mb-4 text-center border-bottom border-secondary pb-2">
+                    <i class="bi bi-diagram-3 me-2"></i>Formulas Implementadas
+                </h5>
+
+                <!-- Base -->
+                <div class="math-container mb-3">
+                    <div class="math-label text-muted">1. Sujeto Base (Menor Índice):</div>
+                    <div class="math-formula">
+                        <span class="var">C<sub>base</sub></span> =
+                        <div class="fraction">
+                            <span class="num">Índice<sub>base</sub></span>
+                            <span class="den">Σ Índices</span>
+                        </div>
+                        × <span class="var">Monto</span>
+                    </div>
+                </div>
+
+                <!-- Progresión -->
+                <div class="math-container">
+                    <div class="math-label text-muted">2. Sujetos Siguientes:</div>
+                    <div class="math-formula">
+                        <span class="var">C<sub>n</sub></span> =
+                        <span class="var">C<sub>n-1</sub></span> +
+                        <div class="fraction">
+                            <span class="num">C<sub>n-1</sub></span>
+                            <span class="den">2</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultados -->
+        <div class="col-lg-8">
+            <div class="content-card h-100">
+                <h4 class="mb-4 text-white"><i class="bi bi-list-check me-2"></i>Distribución Escalonada</h4>
+
+                @if (SumaIndices > 0)
+                {
+                    var resultados = CalcularDistribucion();
+
+                    <div class="table-responsive">
+                        <table class="table table-dark custom-table">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Orden</th>
+                                    <th>Sujeto</th>
+                                    <th class="text-center">Índice</th>
+                                    <th class="text-center">Tipo de Cálculo</th>
+                                    <th class="text-end pe-4">Resultado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in resultados)
+                                {
+                                    <tr class="@(item.EsBase ? "bg-emerald-faded" : "")">
+                                        <td class="ps-4 text-muted">#@(resultados.IndexOf(item) + 1)</td>
+                                        <td class="fw-bold">@item.Nombre</td>
+                                        <td class="text-center"><span class="badge bg-secondary">@item.Indice</span></td>
+                                        <td class="text-center">
+                                            @if (item.EsBase)
+                                            {
+                                                <small class="badge bg-emerald-outline">Cálculo Base (Mínimo)</small>
+                                            }
+                                            else
+                                            {
+                                                <small class="text-muted">Anterior + 50%</small>
+                                            }
+                                        </td>
+                                        <td class="text-end pe-4 fw-bold text-emerald">
+                                            @item.MontoAsignado.ToString("C0", cultureCOP)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="bg-darker">
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold text-muted">Total Proyectado:</td>
+                                    <td class="text-end pe-4 fw-bold text-emerald border-top border-emerald fs-5">
+                                        @resultados.Sum(x => x.MontoAsignado).ToString("C0", cultureCOP)
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="alert alert-info mt-4 bg-dark border-secondary text-muted">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Nota:</strong> Este método es acumulativo. El total puede exceder o ser inferior al monto inicial dependiendo de la cantidad de sujetos y sus proporciones.
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+@code {
+    private double montoTotal = 85000000;
+    private CultureInfo cultureCOP = new CultureInfo("es-CO");
+
+    private List<Individuo> individuos = new()
+{
+    new Individuo { Nombre = "Raul", Indice = 10 },
+    new Individuo { Nombre = "Stephany", Indice = 15 },
+    new Individuo { Nombre = "Maicol", Indice = 20 }
+};
+
+    public class Individuo { public string Nombre { get; set; } = ""; public double Indice { get; set; } }
+    public class ResultadoItem
+    {
+        public string Nombre { get; set; } = "";
+        public double Indice { get; set; }
+        public double MontoAsignado { get; set; }
+        public bool EsBase { get; set; }
+    }
+
+    private void AgregarIndividuo() => individuos.Add(new Individuo());
+    private void EliminarIndividuo(int index) { if (individuos.Count > 1) individuos.RemoveAt(index); }
+
+    private double SumaIndices => individuos.Sum(i => i.Indice);
+
+    private List<ResultadoItem> CalcularDistribucion()
+    {
+        var listaOrdenada = individuos.OrderBy(i => i.Indice).ToList();
+        var resultados = new List<ResultadoItem>();
+        double ultimoCociente = 0;
+
+        for (int i = 0; i < listaOrdenada.Count; i++)
+        {
+            var actual = listaOrdenada[i];
+            double cocienteActual = 0;
+
+            if (i == 0) // El primero (Sujeto Base con menor índice)
+            {
+                cocienteActual = (actual.Indice / SumaIndices) * montoTotal;
+                resultados.Add(new ResultadoItem
+                {
+                    Nombre = actual.Nombre,
+                    Indice = actual.Indice,
+                    MontoAsignado = cocienteActual,
+                    EsBase = true
+                });
+            }
+            else // Los siguientes (Anterior + 50%)
+            {
+                cocienteActual = ultimoCociente + (ultimoCociente / 2);
+                resultados.Add(new ResultadoItem
+                {
+                    Nombre = actual.Nombre,
+                    Indice = actual.Indice,
+                    MontoAsignado = cocienteActual,
+                    EsBase = false
+                });
+            }
+            ultimoCociente = cocienteActual;
+        }
+        return resultados;
+    }
+
+
+}

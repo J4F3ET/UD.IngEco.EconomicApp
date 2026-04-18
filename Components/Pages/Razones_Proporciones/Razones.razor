@@ -1,0 +1,62 @@
+﻿@page "/razones"
+@rendermode InteractiveServer
+
+<div class="animate-fadeIn">
+    <div class="module-header mb-4">
+        <h2 class="text-emerald fw-bold">
+            <i class="bi bi-diagram-3-fill me-2"></i>Módulo de Reparto Proporcional
+        </h2>
+        <p class="text-muted">Seleccione el método de distribución que desea aplicar según el enunciado del problema.</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Método 1: Regla de Tres / Proporciones -->
+        <div class="col-md-4">
+            <div class="method-card" @onclick='() => Navegar("razones/metodo-1")'>
+                <div class="icon-circle">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                </div>
+                <h3>Método 1</h3>
+                <h5>Proporciones</h5>
+                <p>Reparto simple basado en la constante de proporcionalidad K.</p>
+                <div class="status-badge">Disponible</div>
+            </div>
+        </div>
+
+        <!-- Método 2: Reduccion a la unidad -->
+        <div class="col-md-4">
+            <div class="method-card" @onclick='() => Navegar("razones/metodo-2")'>
+                <div class="icon-circle">
+                    <i class="bi bi-bounding-box"></i>
+                </div>
+                <h3>Método 2</h3>
+                <h5>Reducción a la Unidad</h5>
+                <p>Lógica de cálculo basada en el valor unitario de los índices.</p>
+                <div class="status-badge">Disponible</div>
+            </div>
+        </div>
+
+        <!-- Método 3: Próximamente -->
+        <div class="col-md-4">
+            <div class="method-card" @onclick='() => Navegar("razones/metodo-3")'>
+                <div class="icon-circle">
+                    <i class="bi bi-pie-chart-fill"></i>
+                </div>
+                <h3>Método 3</h3>
+                <h5>Partes Alícuotas</h5>
+                <p>Distribución de montos mediante fracciones proporcionales.</p>
+                <div class="status-badge">Disponible</div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+@code {
+    [Inject] private NavigationManager Nav { get; set; } = default!;
+
+    private void Navegar(string url) => Nav.NavigateTo(url);
+
+
+}

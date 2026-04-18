@@ -1,0 +1,71 @@
+/* Contenedor del Logo */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1.5rem 1rem;
+    text-decoration: none !important;
+}
+
+.brand-icon {
+    background-color: #10b981;
+    color: #0f172a;
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brand-text {
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.highlight {
+    color: #10b981;
+}
+
+/* Etiquetas de sección (GENERAL / OPERACIONES) */
+.nav-link {
+    color: #94a3b8 !important;
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    margin: 4px 0;
+    transition: all 0.2s;
+}
+
+/* Espacio entre el icono y el texto */
+.nav-link i {
+    margin-right: 12px;
+    font-size: 1.1rem;
+}
+
+/* Cuando pasas el mouse por encima */
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #f8fafc !important;
+}
+
+/* EL ESTADO ACTIVO (Lo que querías lograr) */
+.nav-link.active {
+    background-color: rgba(16, 185, 129, 0.1) !important; /* Verde muy suave de fondo */
+    color: #10b981 !important; /* Verde esmeralda para el texto */
+    font-weight: 600;
+}
+
+/* Etiquetas de "Operaciones" */
+.nav-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #475569;
+    font-weight: bold;
+}
+
+.text-emerald {
+    color: #10b981;
+}
