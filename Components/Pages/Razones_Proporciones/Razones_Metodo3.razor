@@ -27,7 +27,7 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <label class="text-muted small fw-bold">ÍNDICES DE REPARTO</label>
-                    <button class="btn btn-sm btn-emerald" @onclick="AgregarIndividuo">
+                    <button class="btn btn-sm btn-outline-emerald" @onclick="AgregarIndividuo">
                         <i class="bi bi-plus-lg"></i> Añadir
                     </button>
                 </div>
@@ -52,9 +52,7 @@
 
             <!-- Panel de Fórmulas -->
             <div class="content-card formula-display">
-                <h5 class="text-emerald mb-4 text-center border-bottom border-secondary pb-2">
-                    <i class="bi bi-diagram-3 me-2"></i>Formulas Implementadas
-                </h5>
+                <h5 class="text-emerald mb-4 text-center border-bottom border-secondary pb-2">Formulas Implementadas</h5>
 
                 <!-- Base -->
                 <div class="math-container mb-3">
@@ -87,7 +85,7 @@
         <!-- Resultados -->
         <div class="col-lg-8">
             <div class="content-card h-100">
-                <h4 class="mb-4 text-white"><i class="bi bi-list-check me-2"></i>Distribución Escalonada</h4>
+                <h4 class="mb-4 text-white"><i class="bi bi-cpu me-2"></i>Análisis de Resultados</h4>
 
                 @if (SumaIndices > 0)
                 {
@@ -100,8 +98,8 @@
                                     <th class="ps-4">Orden</th>
                                     <th>Sujeto</th>
                                     <th class="text-center">Índice</th>
-                                    <th class="text-center">Tipo de Cálculo</th>
-                                    <th class="text-end pe-4">Resultado</th>
+                                    <th class="text-center">Ecuación Aplicada</th>
+                                    <th class="text-end pe-4">Monto Asignado</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -143,6 +141,16 @@
                         <strong>Nota:</strong> Este método es acumulativo. El total puede exceder o ser inferior al monto inicial dependiendo de la cantidad de sujetos y sus proporciones.
                     </div>
                 }
+                else
+                {
+                    <div class="empty-state">
+                        <div class="empty-icon-circle">
+                            <i class="bi bi-calculator"></i>
+                        </div>
+                        <h5 class="text-white">Esperando datos...</h5>
+                        <p>Ingrese los valores para proceder con el cálculo.</p>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -151,14 +159,14 @@
 </div>
 
 @code {
-    private double montoTotal = 85000000;
+    private double montoTotal = 0;
     private CultureInfo cultureCOP = new CultureInfo("es-CO");
 
     private List<Individuo> individuos = new()
 {
-    new Individuo { Nombre = "Raul", Indice = 10 },
-    new Individuo { Nombre = "Stephany", Indice = 15 },
-    new Individuo { Nombre = "Maicol", Indice = 20 }
+    new Individuo { Nombre = "Sujeto 1", Indice = 0 },
+    new Individuo { Nombre = "Sujeto 2", Indice = 0 },
+    new Individuo { Nombre = "Sujeto 3", Indice = 0 }
 };
 
     public class Individuo { public string Nombre { get; set; } = ""; public double Indice { get; set; } }
