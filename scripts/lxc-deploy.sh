@@ -8,7 +8,7 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 # CONFIGURACIÓN - EDITAR ANTES DE EJECUTAR
 # ═══════════════════════════════════════════════════════════════════════════════
-GIT_REPO="https://github.com/YOUR_USER/EconomicApp.git"
+GIT_REPO="https://github.com/J4F3ET/EconomicApp.git"
 BRANCH="main"
 PORT=5050
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
 # EconomicApp - Despliegue Rápido para LXC + Tailscale
-# Usage: curl -fsSL https://raw.githubusercontent.com/YOUR_USER/EconomicApp/main/scripts/deploy.sh | bash -s -- --repo YOUR_REPO --branch main
+# Usage: curl -fsSL https://raw.githubusercontent.com/J4F3ET/EconomicApp/main/scripts/deploy.sh | bash -s -- --repo YOUR_REPO --branch main
 # ═══════════════════════════════════════════════════════════════════════════════
 
 set -e
@@ -9,7 +9,7 @@ set -e
 # ─────────────────────── CONFIGURACIÓN ───────────────────────────────────────
 APP_NAME="EconomicApp"
 APP_PORT="5050"
-GIT_REPO="${REPO_URL:-https://github.com/YOUR_USER/EconomicApp.git}"
+GIT_REPO="${REPO_URL:-https://github.com/J4F3ET/EconomicApp.git}"
 BRANCH="${BRANCH_NAME:-main}"
 APP_DIR="/opt/economicapp"
 BUILD_DIR="${APP_DIR}/bin/publish"
@@ -111,7 +111,7 @@ deploy() {
     cat > /etc/systemd/system/${SERVICE_NAME}.service << EOF
 [Unit]
 Description=EconomicApp - Simulador de Créditos Académico
-Documentation=https://github.com/YOUR_USER/EconomicApp
+Documentation=https://github.com/J4F3ET/EconomicApp
 After=network.target
 Wants=network.target
 
