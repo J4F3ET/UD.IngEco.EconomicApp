@@ -1,47 +1,47 @@
 @using EconomicApp.Models.DTOs
 
-<div class="card-dark">
-    <div class="flex justify-between items-center mb-4">
+<div class="bg-slate-800 rounded-xl p-4 sm:p-6 border border-slate-700/50">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <h5 class="text-emerald-500 font-semibold flex items-center gap-2">
             <i class="bi bi-table"></i>
             Tabla de Amortización
         </h5>
-        <div class="flex gap-2">
-            <button class="bg-emerald-500 text-slate-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-400 transition-colors flex items-center gap-2"
+        <div class="flex gap-2 w-full sm:w-auto">
+            <button class="bg-emerald-500 text-slate-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-400 transition-colors flex items-center gap-2 flex-1 sm:flex-none justify-center"
                 @onclick="() => OnExport.InvokeAsync(FormatoExportacion.Excel)">
                 <i class="bi bi-file-excel"></i>
-                Excel
+                <span class="hidden sm:inline">Excel</span>
             </button>
-            <button class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-400 transition-colors flex items-center gap-2"
+            <button class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-400 transition-colors flex items-center gap-2 flex-1 sm:flex-none justify-center"
                 @onclick="() => OnExport.InvokeAsync(FormatoExportacion.PDF)">
                 <i class="bi bi-file-pdf"></i>
-                PDF
+                <span class="hidden sm:inline">PDF</span>
             </button>
         </div>
     </div>
 
-    <div class="overflow-x-auto">
-        <table class="w-full">
+    <div class="overflow-x-auto -mx-4 sm:mx-0 custom-scrollbar">
+        <table class="w-full min-w-[600px]">
             <thead>
                 <tr class="border-b border-slate-700">
-                    <th class="text-left py-3 px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Periodo</th>
-                    <th class="text-right py-3 px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Saldo Inicial</th>
-                    <th class="text-right py-3 px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Interés</th>
-                    <th class="text-right py-3 px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Abono Capital</th>
-                    <th class="text-right py-3 px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Cuota</th>
-                    <th class="text-right py-3 px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Saldo Final</th>
+                    <th class="text-left py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">#</th>
+                    <th class="text-right py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold hidden sm:table-cell">Saldo Inicial</th>
+                    <th class="text-right py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Interés</th>
+                    <th class="text-right py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold hidden sm:table-cell">Capital</th>
+                    <th class="text-right py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Cuota</th>
+                    <th class="text-right py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold hidden sm:table-cell">Saldo Final</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var cuota in Cuotas)
                 {
-                    <tr class="border-b border-slate-700/50 hover:bg-emerald-500/5 transition-colors">
-                        <td class="py-3 px-4 text-center font-bold">@cuota.NumeroPeriodo</td>
-                        <td class="py-3 px-4 text-right">@cuota.SaldoInicial.ToString("N2")</td>
-                        <td class="py-3 px-4 text-right">@cuota.Interes.ToString("N2")</td>
-                        <td class="py-3 px-4 text-right">@cuota.AbonoCapital.ToString("N2")</td>
-                        <td class="py-3 px-4 text-right font-bold">@cuota.ValorCuota.ToString("N2")</td>
-                        <td class="py-3 px-4 text-right">@cuota.SaldoFinal.ToString("N2")</td>
+                    <tr class="border-b border-slate-700/30 hover:bg-emerald-500/5 transition-colors">
+                        <td class="py-3 px-2 sm:px-4 text-center font-bold text-sm">@cuota.NumeroPeriodo</td>
+                        <td class="py-3 px-2 sm:px-4 text-right text-sm hidden sm:table-cell text-slate-300">@cuota.SaldoInicial.ToString("N2")</td>
+                        <td class="py-3 px-2 sm:px-4 text-right text-sm text-slate-300">@cuota.Interes.ToString("N2")</td>
+                        <td class="py-3 px-2 sm:px-4 text-right text-sm hidden sm:table-cell text-slate-300">@cuota.AbonoCapital.ToString("N2")</td>
+                        <td class="py-3 px-2 sm:px-4 text-right font-bold text-emerald-500 text-sm">@cuota.ValorCuota.ToString("N2")</td>
+                        <td class="py-3 px-2 sm:px-4 text-right text-sm hidden sm:table-cell">@cuota.SaldoFinal.ToString("N2")</td>
                     </tr>
                 }
             </tbody>

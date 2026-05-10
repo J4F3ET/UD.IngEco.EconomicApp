@@ -1,27 +1,27 @@
 @using EconomicApp.Models.DTOs
 
-<div class="card-dark mb-4">
+<div class="card-dark h-full">
     <h5 class="text-emerald-500 font-semibold mb-4 flex items-center gap-2">
         <i class="bi bi-currency-dollar"></i>
         Datos del Préstamo
     </h5>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
             <label class="block text-sm font-medium text-slate-400 mb-2">Monto del Préstamo (P)</label>
             <div class="flex">
-                <span class="input-dark rounded-l-lg px-3 flex items-center bg-slate-800 border-r border-slate-700">$</span>
-                <InputNumber class="input-dark rounded-l-none" @bind-Value="Simulacion.MontoPrestamo" step="1000" min="0" placeholder="0.00" />
+                <span class="input-dark rounded-l-lg px-3 flex items-center bg-slate-800 border-r border-slate-700 text-sm border-r-0">$</span>
+                <InputNumber class="input-dark rounded-l-none text-sm !rounded-l-none" @bind-Value="Simulacion.MontoPrestamo" step="1000" min="0" placeholder="0.00" />
             </div>
             <ValidationMessage For="@(() => Simulacion.MontoPrestamo)" class="text-red-500 text-xs mt-1" />
         </div>
         <div>
             <label class="block text-sm font-medium text-slate-400 mb-2">Plazo (n)</label>
-            <InputNumber class="input-dark" @bind-Value="Simulacion.Plazo" min="1" placeholder="12" />
+            <InputNumber class="input-dark text-sm" @bind-Value="Simulacion.Plazo" min="1" placeholder="12" />
             <ValidationMessage For="@(() => Simulacion.Plazo)" class="text-red-500 text-xs mt-1" />
         </div>
         <div>
             <label class="block text-sm font-medium text-slate-400 mb-2">Frecuencia de Pago</label>
-            <InputSelect class="select-dark" @bind-Value="Simulacion.FrecuenciaPago">
+            <InputSelect class="select-dark text-sm" @bind-Value="Simulacion.FrecuenciaPago">
                 <option value="@Frecuencia.Mensual">Mensual</option>
                 <option value="@Frecuencia.Bimestral">Bimestral</option>
                 <option value="@Frecuencia.Trimestral">Trimestral</option>
