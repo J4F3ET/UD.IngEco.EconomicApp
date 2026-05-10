@@ -1,32 +1,39 @@
 @using EconomicApp.Models.DTOs
 
-<div class="simulador-card">
-    <h5 class="text-emerald mb-3"><i class="bi bi-gear me-2"></i>Configuración de Amortización</h5>
-    <div class="row g-3 align-items-center">
-        <div class="col-md-9">
-            <label class="math-label">Sistema de Amortización</label>
-            <div class="d-flex gap-4">
-                <InputRadioGroup Name="sistema" @bind-Value="Amortizacion.SistemaAmortizacion">
-                    <div class="me-4">
-                        <InputRadio Name="sistema" Value="SistemaAmortizacion.Frances" />
-                        <label class="form-check-label text-white ms-2">
-                            <i class="bi bi-calendar-check me-1"></i>Francés (Cuota Fija)
-                        </label>
-                    </div>
-                    <div>
-                        <InputRadio Name="sistema" Value="SistemaAmortizacion.Aleman" />
-                        <label class="form-check-label text-white ms-2">
-                            <i class="bi bi-cash-stack me-1"></i>Alemán (Abono Constante)
-                        </label>
-                    </div>
-                </InputRadioGroup>
+<div class="card-dark">
+    <h5 class="text-emerald-500 font-semibold mb-4 flex items-center gap-2">
+        <i class="bi bi-gear"></i>
+        Configuración de Amortización
+    </h5>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            <label class="block text-sm font-medium text-slate-400 mb-3">Sistema de Amortización</label>
+            <div class="flex gap-6">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="sistema" class="w-4 h-4 accent-emerald-500" 
+                        checked="@(Amortizacion.SistemaAmortizacion == SistemaAmortizacion.Frances)"
+                        @onclick="@(() => Amortizacion.SistemaAmortizacion = SistemaAmortizacion.Frances)" />
+                    <span class="text-white flex items-center gap-1">
+                        <i class="bi bi-calendar-check text-emerald-500"></i>
+                        Francés
+                    </span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="sistema" class="w-4 h-4 accent-emerald-500"
+                        checked="@(Amortizacion.SistemaAmortizacion == SistemaAmortizacion.Aleman)"
+                        @onclick="@(() => Amortizacion.SistemaAmortizacion = SistemaAmortizacion.Aleman)" />
+                    <span class="text-white flex items-center gap-1">
+                        <i class="bi bi-cash-stack text-emerald-500"></i>
+                        Alemán
+                    </span>
+                </label>
             </div>
         </div>
-        <div class="col-md-3">
-            <label class="math-label">Periodos de Gracia (g)</label>
-            <InputNumber class="form-control" @bind-Value="Amortizacion.PeriodosGracia" min="0" max="60" placeholder="0" />
-            <ValidationMessage For="@(() => Amortizacion.PeriodosGracia)" class="text-danger small" />
-            <small class="text-muted d-block">Intereses capitalizados</small>
+        <div>
+            <label class="block text-sm font-medium text-slate-400 mb-2">Periodos de Gracia (g)</label>
+            <InputNumber class="input-dark" @bind-Value="Amortizacion.PeriodosGracia" min="0" max="60" placeholder="0" />
+            <ValidationMessage For="@(() => Amortizacion.PeriodosGracia)" class="text-red-500 text-xs mt-1" />
+            <small class="text-slate-500 text-xs">Intereses capitalizados al capital</small>
         </div>
     </div>
 </div>

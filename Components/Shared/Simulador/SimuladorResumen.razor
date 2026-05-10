@@ -1,23 +1,17 @@
 @using EconomicApp.Models.DTOs
 
-<div class="row g-4 mb-4">
-    <div class="col-md-4">
-        <div class="stat-box-simulador">
-            <div class="stat-label">Total Intereses</div>
-            <h3 class="stat-value text-emerald">@Resultado.TotalInteresesPagados.ToString("C")</h3>
-        </div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="card-dark text-center">
+        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Total Intereses</div>
+        <h3 class="text-2xl font-bold text-emerald-500">@Resultado.TotalInteresesPagados.ToString("C")</h3>
     </div>
-    <div class="col-md-4">
-        <div class="stat-box-simulador">
-            <div class="stat-label">Total Pagado</div>
-            <h3 class="stat-value text-white">@Resultado.TotalPagado.ToString("C")</h3>
-        </div>
+    <div class="card-dark text-center">
+        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Total Pagado</div>
+        <h3 class="text-2xl font-bold text-white">@Resultado.TotalPagado.ToString("C")</h3>
     </div>
-    <div class="col-md-4">
-        <div class="stat-box-simulador">
-            <div class="stat-label">Costo Financiero</div>
-            <h3 class="stat-value text-danger">@((Resultado.TotalPagado - Monto).ToString("C"))</h3>
-        </div>
+    <div class="card-dark text-center">
+        <div class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Costo Financiero</div>
+        <h3 class="text-2xl font-bold text-red-500">@((Resultado.TotalPagado - Monto).ToString("C"))</h3>
     </div>
 </div>
 

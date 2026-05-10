@@ -1,29 +1,32 @@
 @using EconomicApp.Models.DTOs
 
-<div class="simulador-card">
-    <h5 class="text-emerald mb-3"><i class="bi bi-currency-dollar me-2"></i>Datos del Préstamo</h5>
-    <div class="row g-3">
-        <div class="col-md-6">
-            <label class="math-label">Monto del Préstamo (P)</label>
-            <div class="input-group">
-                <span class="input-group-text">$</span>
-                <InputNumber class="form-control" @bind-Value="Simulacion.MontoPrestamo" step="1000" min="0" placeholder="0.00" />
+<div class="card-dark mb-4">
+    <h5 class="text-emerald-500 font-semibold mb-4 flex items-center gap-2">
+        <i class="bi bi-currency-dollar"></i>
+        Datos del Préstamo
+    </h5>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+            <label class="block text-sm font-medium text-slate-400 mb-2">Monto del Préstamo (P)</label>
+            <div class="flex">
+                <span class="input-dark rounded-l-lg px-3 flex items-center bg-slate-800 border-r border-slate-700">$</span>
+                <InputNumber class="input-dark rounded-l-none" @bind-Value="Simulacion.MontoPrestamo" step="1000" min="0" placeholder="0.00" />
             </div>
-            <ValidationMessage For="@(() => Simulacion.MontoPrestamo)" class="text-danger small" />
+            <ValidationMessage For="@(() => Simulacion.MontoPrestamo)" class="text-red-500 text-xs mt-1" />
         </div>
-        <div class="col-md-3">
-            <label class="math-label">Plazo (n)</label>
-            <InputNumber class="form-control" @bind-Value="Simulacion.Plazo" min="1" placeholder="12" />
-            <ValidationMessage For="@(() => Simulacion.Plazo)" class="text-danger small" />
+        <div>
+            <label class="block text-sm font-medium text-slate-400 mb-2">Plazo (n)</label>
+            <InputNumber class="input-dark" @bind-Value="Simulacion.Plazo" min="1" placeholder="12" />
+            <ValidationMessage For="@(() => Simulacion.Plazo)" class="text-red-500 text-xs mt-1" />
         </div>
-        <div class="col-md-3">
-            <label class="math-label">Frecuencia de Pago</label>
-            <InputSelect class="form-select" @bind-Value="Simulacion.FrecuenciaPago">
-                <option value="Frecuencia.Mensual">Mensual</option>
-                <option value="Frecuencia.Bimestral">Bimestral</option>
-                <option value="Frecuencia.Trimestral">Trimestral</option>
-                <option value="Frecuencia.Semestral">Semestral</option>
-                <option value="Frecuencia.Anual">Anual</option>
+        <div>
+            <label class="block text-sm font-medium text-slate-400 mb-2">Frecuencia de Pago</label>
+            <InputSelect class="select-dark" @bind-Value="Simulacion.FrecuenciaPago">
+                <option value="@Frecuencia.Mensual">Mensual</option>
+                <option value="@Frecuencia.Bimestral">Bimestral</option>
+                <option value="@Frecuencia.Trimestral">Trimestral</option>
+                <option value="@Frecuencia.Semestral">Semestral</option>
+                <option value="@Frecuencia.Anual">Anual</option>
             </InputSelect>
         </div>
     </div>

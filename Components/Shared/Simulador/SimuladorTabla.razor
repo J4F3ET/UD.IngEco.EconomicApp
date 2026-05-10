@@ -1,42 +1,47 @@
 @using EconomicApp.Models.DTOs
 
-<div class="simulador-card">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="text-emerald mb-0">
-            <i class="bi bi-table me-2"></i>Tabla de Amortización
+<div class="card-dark">
+    <div class="flex justify-between items-center mb-4">
+        <h5 class="text-emerald-500 font-semibold flex items-center gap-2">
+            <i class="bi bi-table"></i>
+            Tabla de Amortización
         </h5>
-        <div class="btn-group">
-            <button class="btn btn-export-excel btn-sm" @onclick="() => OnExport.InvokeAsync(FormatoExportacion.Excel)">
-                <i class="bi bi-file-excel me-1"></i>Excel
+        <div class="flex gap-2">
+            <button class="bg-emerald-500 text-slate-900 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-400 transition-colors flex items-center gap-2"
+                @onclick="() => OnExport.InvokeAsync(FormatoExportacion.Excel)">
+                <i class="bi bi-file-excel"></i>
+                Excel
             </button>
-            <button class="btn btn-export-pdf btn-sm" @onclick="() => OnExport.InvokeAsync(FormatoExportacion.PDF)">
-                <i class="bi bi-file-pdf me-1"></i>PDF
+            <button class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-red-400 transition-colors flex items-center gap-2"
+                @onclick="() => OnExport.InvokeAsync(FormatoExportacion.PDF)">
+                <i class="bi bi-file-pdf"></i>
+                PDF
             </button>
         </div>
     </div>
 
-    <div class="scroll-area">
-        <table class="table table-dark table-striped table-simulador">
+    <div class="overflow-x-auto">
+        <table class="w-full">
             <thead>
-                <tr>
-                    <th>Periodo</th>
-                    <th>Saldo Inicial</th>
-                    <th>Interés</th>
-                    <th>Abono Capital</th>
-                    <th>Cuota</th>
-                    <th>Saldo Final</th>
+                <tr class="border-b border-slate-700">
+                    <th class="text-left py-3 px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Periodo</th>
+                    <th class="text-right py-3 px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Saldo Inicial</th>
+                    <th class="text-right py-3 px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Interés</th>
+                    <th class="text-right py-3 px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Abono Capital</th>
+                    <th class="text-right py-3 px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Cuota</th>
+                    <th class="text-right py-3 px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Saldo Final</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var cuota in Cuotas)
                 {
-                    <tr>
-                        <td class="text-center fw-bold">@cuota.NumeroPeriodo</td>
-                        <td>@cuota.SaldoInicial.ToString("N2")</td>
-                        <td>@cuota.Interes.ToString("N2")</td>
-                        <td>@cuota.AbonoCapital.ToString("N2")</td>
-                        <td class="fw-bold">@cuota.ValorCuota.ToString("N2")</td>
-                        <td>@cuota.SaldoFinal.ToString("N2")</td>
+                    <tr class="border-b border-slate-700/50 hover:bg-emerald-500/5 transition-colors">
+                        <td class="py-3 px-4 text-center font-bold">@cuota.NumeroPeriodo</td>
+                        <td class="py-3 px-4 text-right">@cuota.SaldoInicial.ToString("N2")</td>
+                        <td class="py-3 px-4 text-right">@cuota.Interes.ToString("N2")</td>
+                        <td class="py-3 px-4 text-right">@cuota.AbonoCapital.ToString("N2")</td>
+                        <td class="py-3 px-4 text-right font-bold">@cuota.ValorCuota.ToString("N2")</td>
+                        <td class="py-3 px-4 text-right">@cuota.SaldoFinal.ToString("N2")</td>
                     </tr>
                 }
             </tbody>
