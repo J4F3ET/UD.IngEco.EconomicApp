@@ -1,0 +1,128 @@
+@page "/simulador"
+@rendermode InteractiveServer
+@inject ITasaService TasaService
+@inject IAmortizacionService AmortizacionService
+@inject IReporteService ReporteService
+@inject IJSRuntime JS
+@using EconomicApp.Components.Shared.Simulador
+
+<div class="animate-fadeIn">
+    <div class="module-header mb-4">
+        <h2 class="text-emerald fw-bold">
+            <i class="bi bi-calculator me-2"></i>Simulador de Créditos
+        </h2>
+        <p class="text-muted">Modele préstamos, convierta tasas y genere tablas de amortización.</p>
+    </div>
+
+    <EditForm Model="@simulacion" OnValidSubmit="SimularCredito" OnInvalidSubmit="SimulacionInvalida">
+        <DataAnnotationsValidator />
+        
+        <SimuladorDatosCredito Simulacion="@simulacion" />
+        <SimuladorTasaInteres Simulacion="@simulacion" />
+        <SimuladorConfigAmortizacion Amortizacion="@amortizacion" />
+        
+        <div class="row">
+            <div class="col-12">
+                <button type="submit" class="btn btn-emerald w-100 py-2">
+                    <i class="bi bi-play-fill me-2"></i>Simular Crédito
+                </button>
+            </div>
+        </div>
+    </EditForm>
+
+    <SimuladorTasaAlert ConversionTasa="@conversionTasa" />
+
+    @if (resultadoAmortizacion != null)
+    {
+        <div class="mt-4 animate-fadeIn">
+            <SimuladorResumen Resultado="@resultadoAmortizacion" Monto="@simulacion.MontoPrestamo" />
+            <SimuladorTabla Cuotas="@resultadoAmortizacion.TablaAmortizacion" OnExport="Exportar" />
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(mensajeError))
+    {
+        <div class="alert alert-danger mt-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@mensajeError
+        </div>
+    }
+</div>
+
+@code {
+    private SimulacionRequestDto simulacion = new() 
+    { 
+        FrecuenciaPago = Frecuencia.Mensual, 
+        FrecuenciaTasa = Frecuencia.Anual,
+        MontoPrestamo = 10000000,
+        Plazo = 12,
+        ValorTasa = 18
+    };
+    private AmortizacionRequestDto amortizacion = new() { SistemaAmortizacion = SistemaAmortizacion.Frances };
+    private ConversionTasaResponseDto? conversionTasa;
+    private AmortizacionResponseDto? resultadoAmortizacion;
+    private string mensajeError = string.Empty;
+
+    private void SimulacionInvalida()
+    {
+        mensajeError = "Por favor, corrija los errores en el formulario antes de simular.";
+        conversionTasa = null;
+        resultadoAmortizacion = null;
+    }
+
+    private void SimularCredito()
+    {
+        try
+        {
+            mensajeError = string.Empty;
+            conversionTasa = null;
+            resultadoAmortizacion = null;
+
+            conversionTasa = TasaService.CalcularTasaPeriodica(simulacion);
+
+            if (!conversionTasa.EsExitoso)
+            {
+                mensajeError = conversionTasa.Mensaje;
+                return;
+            }
+
+            amortizacion.Capital = simulacion.MontoPrestamo;
+            amortizacion.Plazo = simulacion.Plazo;
+            amortizacion.TasaEfectivaPeriodica = conversionTasa.TasaEfectivaPeriodica;
+
+            resultadoAmortizacion = AmortizacionService.GenerarTabla(amortizacion);
+        }
+        catch (Exception ex)
+        {
+            mensajeError = $"Error al simular: {ex.Message}";
+        }
+    }
+
+    private async Task Exportar(FormatoExportacion formato)
+    {
+        if (resultadoAmortizacion == null || conversionTasa == null) return;
+
+        try
+        {
+            byte[] archivo;
+            string extension;
+
+            if (formato == FormatoExportacion.Excel)
+            {
+                archivo = ReporteService.GenerarReporteExcel(resultadoAmortizacion, simulacion);
+                extension = "csv";
+            }
+            else
+            {
+                archivo = ReporteService.GenerarReportePdf(resultadoAmortizacion, simulacion);
+                extension = "txt";
+            }
+
+            var nombreArchivo = $"reporte_credito_{DateTime.Now:yyyyMMddHHmmss}.{extension}";
+            await JS.InvokeVoidAsync("downloadFileFromBytes", nombreArchivo, archivo);
+        }
+        catch (Exception ex)
+        {
+            mensajeError = $"Error al exportar: {ex.Message}";
+        }
+    }
+}

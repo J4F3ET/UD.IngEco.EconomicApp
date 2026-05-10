@@ -1,0 +1,18 @@
+@using EconomicApp.Models.DTOs
+
+@if (ConversionTasa != null)
+{
+    <div class="alert alert-success mt-4 simulador-card" role="alert">
+        <h5 class="alert-heading">
+            <i class="bi bi-check-circle-fill me-2"></i>Tasa Convertida
+        </h5>
+        <p class="mb-0">
+            <strong>Tasa Efectiva Periódica:</strong> @((ConversionTasa.TasaEfectivaPeriodica * 100).ToString("F4"))%
+        </p>
+        <small class="text-muted">@ConversionTasa.Mensaje</small>
+    </div>
+}
+
+@code {
+    [Parameter] public ConversionTasaResponseDto? ConversionTasa { get; set; }
+}

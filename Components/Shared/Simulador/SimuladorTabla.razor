@@ -1,0 +1,50 @@
+@using EconomicApp.Models.DTOs
+
+<div class="simulador-card">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="text-emerald mb-0">
+            <i class="bi bi-table me-2"></i>Tabla de Amortización
+        </h5>
+        <div class="btn-group">
+            <button class="btn btn-export-excel btn-sm" @onclick="() => OnExport.InvokeAsync(FormatoExportacion.Excel)">
+                <i class="bi bi-file-excel me-1"></i>Excel
+            </button>
+            <button class="btn btn-export-pdf btn-sm" @onclick="() => OnExport.InvokeAsync(FormatoExportacion.PDF)">
+                <i class="bi bi-file-pdf me-1"></i>PDF
+            </button>
+        </div>
+    </div>
+
+    <div class="scroll-area">
+        <table class="table table-dark table-striped table-simulador">
+            <thead>
+                <tr>
+                    <th>Periodo</th>
+                    <th>Saldo Inicial</th>
+                    <th>Interés</th>
+                    <th>Abono Capital</th>
+                    <th>Cuota</th>
+                    <th>Saldo Final</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cuota in Cuotas)
+                {
+                    <tr>
+                        <td class="text-center fw-bold">@cuota.NumeroPeriodo</td>
+                        <td>@cuota.SaldoInicial.ToString("N2")</td>
+                        <td>@cuota.Interes.ToString("N2")</td>
+                        <td>@cuota.AbonoCapital.ToString("N2")</td>
+                        <td class="fw-bold">@cuota.ValorCuota.ToString("N2")</td>
+                        <td>@cuota.SaldoFinal.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    [Parameter] public List<CuotaDto> Cuotas { get; set; } = new();
+    [Parameter] public EventCallback<FormatoExportacion> OnExport { get; set; }
+}

@@ -1,0 +1,36 @@
+@using EconomicApp.Models.DTOs
+
+<div class="simulador-card">
+    <h5 class="text-emerald mb-3"><i class="bi bi-gear me-2"></i>Configuración de Amortización</h5>
+    <div class="row g-3 align-items-center">
+        <div class="col-md-9">
+            <label class="math-label">Sistema de Amortización</label>
+            <div class="d-flex gap-4">
+                <InputRadioGroup Name="sistema" @bind-Value="Amortizacion.SistemaAmortizacion">
+                    <div class="me-4">
+                        <InputRadio Name="sistema" Value="SistemaAmortizacion.Frances" />
+                        <label class="form-check-label text-white ms-2">
+                            <i class="bi bi-calendar-check me-1"></i>Francés (Cuota Fija)
+                        </label>
+                    </div>
+                    <div>
+                        <InputRadio Name="sistema" Value="SistemaAmortizacion.Aleman" />
+                        <label class="form-check-label text-white ms-2">
+                            <i class="bi bi-cash-stack me-1"></i>Alemán (Abono Constante)
+                        </label>
+                    </div>
+                </InputRadioGroup>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <label class="math-label">Periodos de Gracia (g)</label>
+            <InputNumber class="form-control" @bind-Value="Amortizacion.PeriodosGracia" min="0" max="60" placeholder="0" />
+            <ValidationMessage For="@(() => Amortizacion.PeriodosGracia)" class="text-danger small" />
+            <small class="text-muted d-block">Intereses capitalizados</small>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public AmortizacionRequestDto Amortizacion { get; set; } = new();
+}

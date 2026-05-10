@@ -1,0 +1,27 @@
+@using EconomicApp.Models.DTOs
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="stat-box-simulador">
+            <div class="stat-label">Total Intereses</div>
+            <h3 class="stat-value text-emerald">@Resultado.TotalInteresesPagados.ToString("C")</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-box-simulador">
+            <div class="stat-label">Total Pagado</div>
+            <h3 class="stat-value text-white">@Resultado.TotalPagado.ToString("C")</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-box-simulador">
+            <div class="stat-label">Costo Financiero</div>
+            <h3 class="stat-value text-danger">@((Resultado.TotalPagado - Monto).ToString("C"))</h3>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public AmortizacionResponseDto Resultado { get; set; } = new();
+    [Parameter] public decimal Monto { get; set; }
+}

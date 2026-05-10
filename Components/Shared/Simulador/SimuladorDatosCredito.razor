@@ -1,0 +1,34 @@
+@using EconomicApp.Models.DTOs
+
+<div class="simulador-card">
+    <h5 class="text-emerald mb-3"><i class="bi bi-currency-dollar me-2"></i>Datos del Préstamo</h5>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="math-label">Monto del Préstamo (P)</label>
+            <div class="input-group">
+                <span class="input-group-text">$</span>
+                <InputNumber class="form-control" @bind-Value="Simulacion.MontoPrestamo" step="1000" min="0" placeholder="0.00" />
+            </div>
+            <ValidationMessage For="@(() => Simulacion.MontoPrestamo)" class="text-danger small" />
+        </div>
+        <div class="col-md-3">
+            <label class="math-label">Plazo (n)</label>
+            <InputNumber class="form-control" @bind-Value="Simulacion.Plazo" min="1" placeholder="12" />
+            <ValidationMessage For="@(() => Simulacion.Plazo)" class="text-danger small" />
+        </div>
+        <div class="col-md-3">
+            <label class="math-label">Frecuencia de Pago</label>
+            <InputSelect class="form-select" @bind-Value="Simulacion.FrecuenciaPago">
+                <option value="Frecuencia.Mensual">Mensual</option>
+                <option value="Frecuencia.Bimestral">Bimestral</option>
+                <option value="Frecuencia.Trimestral">Trimestral</option>
+                <option value="Frecuencia.Semestral">Semestral</option>
+                <option value="Frecuencia.Anual">Anual</option>
+            </InputSelect>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public SimulacionRequestDto Simulacion { get; set; } = new();
+}
