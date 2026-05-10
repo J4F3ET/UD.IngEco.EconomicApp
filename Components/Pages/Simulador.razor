@@ -67,14 +67,13 @@
 
     private void SimularCredito()
     {
+        mensajeError = string.Empty;
+        conversionTasa = null;
+        resultadoAmortizacion = null;
+        StateHasChanged();
         try
         {
-            mensajeError = string.Empty;
-            conversionTasa = null;
-            resultadoAmortizacion = null;
-
             conversionTasa = TasaService.CalcularTasaPeriodica(simulacion);
-
             if (!conversionTasa.EsExitoso)
             {
                 mensajeError = conversionTasa.Mensaje;
