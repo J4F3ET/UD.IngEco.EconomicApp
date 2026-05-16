@@ -1,66 +1,82 @@
 using EconomicApp.Models.DTOs;
+using System;
 
-namespace EconomicApp.Services;
-
-public class ServicioConversorTasas : ITasaService
+namespace EconomicApp.Services
 {
-    private const int DECIMALES_PRECISION = 6;
-
-    public ConversionTasaResponseDto CalcularTasaPeriodica(SimulacionRequestDto request)
+    public class ServicioConversorTasas : ITasaService
     {
-        var respuesta = new ConversionTasaResponseDto { EsExitoso = false };
+        private const int DECIMALES_PRECISION = 10;
 
-        try
+        public ConversionTasaResponseDto CalcularTasaPeriodica(SimulacionRequestDto request)
         {
-            if (request.MontoPrestamo <= 0 || request.Plazo <= 0 || request.ValorTasa <= 0)
+            var respuesta = new ConversionTasaResponseDto { EsExitoso = false };
+
+            try
             {
-                respuesta.Mensaje = "Los valores de monto, plazo y tasa deben ser mayores a cero.";
-                return respuesta;
+                if (request.MontoPrestamo <= 0 || request.Plazo <= 0 || request.ValorTasa <= 0)
+                {
+                    respuesta.Mensaje = "Los valores de monto, plazo y tasa deben ser mayores a cero.";
+                    return respuesta;
+                }
+
+                decimal tasaConvertida;
+                // Necesitamos rastrear cuál es la base de la tasa que vamos a usar en la equivalencia
+                Frecuencia frecuenciaOrigen;
+
+                if (request.TipoTasa == TipoTasa.Nominal)
+                {
+                    // La fórmula matemática siempre convierte la Nominal en una Efectiva Anual (EA)
+                    tasaConvertida = ConvertirNominalAEfectiva(request.ValorTasa, request.FrecuenciaTasa);
+
+                    // Como ahora es Efectiva Anual, su frecuencia de origen es 1 (Anual)
+                    // Nota: Asegúrate de que tu Enum 'Frecuencia' tenga 'Anual = 1'. Si no, usa (Frecuencia)1
+                    frecuenciaOrigen = (Frecuencia)1;
+                }
+                else
+                {
+                    // Si ya ingresó una efectiva, la usamos tal cual con su frecuencia original
+                    tasaConvertida = request.ValorTasa / 100;
+                    frecuenciaOrigen = request.FrecuenciaTasa;
+                }
+
+                // Finalmente calculamos la equivalencia hacia la frecuencia de PAGO
+                decimal tasaPeriodica = EquivalenciaTasas(tasaConvertida, frecuenciaOrigen, request.FrecuenciaPago);
+
+                respuesta.TasaEfectivaPeriodica = Math.Round(tasaPeriodica, DECIMALES_PRECISION);
+                respuesta.EsExitoso = true;
+                respuesta.Mensaje = $"Tasa convertida exitosamente a tasa efectiva periódica ({request.FrecuenciaPago}).";
+            }
+            catch (Exception ex)
+            {
+                respuesta.Mensaje = $"Error en el cálculo: {ex.Message}";
             }
 
-            decimal tasaConvertida;
-
-            if (request.TipoTasa == TipoTasa.Nominal)
-            {
-                tasaConvertida = ConvertirNominalAEfectiva(request.ValorTasa, request.FrecuenciaTasa);
-            }
-            else
-            {
-                tasaConvertida = request.ValorTasa / 100;
-            }
-
-            decimal tasaPeriodica = EquivalenciaTasas(tasaConvertida, request.FrecuenciaTasa, request.FrecuenciaPago);
-
-            respuesta.TasaEfectivaPeriodica = Math.Round(tasaPeriodica, DECIMALES_PRECISION);
-            respuesta.EsExitoso = true;
-            respuesta.Mensaje = $"Tasa convertida exitosamente a tasa efectiva periódica ({request.FrecuenciaPago}).";
+            return respuesta;
         }
-        catch (Exception ex)
+
+        private decimal ConvertirNominalAEfectiva(decimal tasaNominal, Frecuencia frecuenciaTasa)
         {
-            respuesta.Mensaje = $"Error en el cálculo: {ex.Message}";
+            int m = (int)frecuenciaTasa;
+            decimal tasaNominalDecimal = tasaNominal / 100;
+            // Retorna siempre una Tasa Efectiva Anual (EA)
+            decimal tasaEfectiva = (decimal)Math.Pow((double)(1 + tasaNominalDecimal / m), m) - 1;
+            return Math.Round(tasaEfectiva, DECIMALES_PRECISION);
         }
 
-        return respuesta;
-    }
+        private decimal EquivalenciaTasas(decimal tasaConocida, Frecuencia frecuenciaOrigen, Frecuencia frecuenciaDestino)
+        {
+            if (frecuenciaOrigen == frecuenciaDestino)
+                return tasaConocida;
 
-    private decimal ConvertirNominalAEfectiva(decimal tasaNominal, Frecuencia frecuenciaTasa)
-    {
-        int m = (int)frecuenciaTasa;
-        decimal tasaNominalDecimal = tasaNominal / 100;
-        return tasaNominalDecimal / m;
-    }
+            decimal n1 = (int)frecuenciaOrigen;
+            decimal n2 = (int)frecuenciaDestino;
 
-    private decimal EquivalenciaTasas(decimal tasaConocida, Frecuencia frecuenciaOrigen, Frecuencia frecuenciaDestino)
-    {
-        if (frecuenciaOrigen == frecuenciaDestino)
-            return tasaConocida;
+            // SOLUCIÓN AL BUG: El exponente es (Origen / Destino)
+            // Ejemplo: De Anual (1) a Trimestral (4) => Factor = 1/4 = 0.25 (Raíz cuarta)
+            decimal factor = n1 / n2;
+            decimal tasaEquivalente = (decimal)Math.Pow((double)(1 + tasaConocida), (double)factor) - 1;
 
-        decimal n1 = (int)frecuenciaOrigen;
-        decimal n2 = (int)frecuenciaDestino;
-
-        decimal factor = n2 / n1;
-        decimal tasaEquivalente = (decimal)Math.Pow((double)(1 + tasaConocida), (double)factor) - 1;
-
-        return Math.Round(tasaEquivalente, DECIMALES_PRECISION);
+            return Math.Round(tasaEquivalente, DECIMALES_PRECISION);
+        }
     }
 }

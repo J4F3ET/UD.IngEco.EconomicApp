@@ -1,33 +1,34 @@
 @using EconomicApp.Models.DTOs
 
-<div class="card-dark h-full">
-    <h5 class="text-emerald-500 font-semibold mb-4 flex items-center gap-2">
+<div class="card-dark m-3">
+    <h5 class="text-emerald-500 font-semibold mb-3 flex items-center gap-2 text-sm">
         <i class="bi bi-currency-dollar"></i>
         Datos del Préstamo
     </h5>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="space-y-3">
         <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">Monto del Préstamo (P)</label>
-            <div class="flex">
-                <span class="input-dark rounded-l-lg px-3 flex items-center bg-slate-800 border-r border-slate-700 text-sm border-r-0">$</span>
-                <InputNumber class="input-dark rounded-l-none text-sm !rounded-l-none" @bind-Value="Simulacion.MontoPrestamo" step="1000" min="0" placeholder="0.00" />
+            <label class="block text-xs font-medium text-slate-400 mb-1">Monto (P)</label>
+            <div class="flex w-full">
+                <span class="bg-slate-800 border border-r-0 border-slate-700 rounded-l-lg px-2 py-2 text-xs text-slate-400 flex items-center">$</span>
+                <InputNumber class="input-dark rounded-l-none !rounded-l-none text-xs flex-1 min-w-0" @bind-Value="Simulacion.MontoPrestamo" step="any" min="0" placeholder="0" />
             </div>
-            <ValidationMessage For="@(() => Simulacion.MontoPrestamo)" class="text-red-500 text-xs mt-1" />
+            <ValidationMessage For="@(() => Simulacion.MontoPrestamo)" class="text-red-500 text-xs" />
         </div>
-        <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">Plazo (n)</label>
-            <InputNumber class="input-dark text-sm" @bind-Value="Simulacion.Plazo" min="1" placeholder="12" />
-            <ValidationMessage For="@(() => Simulacion.Plazo)" class="text-red-500 text-xs mt-1" />
-        </div>
-        <div>
-            <label class="block text-sm font-medium text-slate-400 mb-2">Frecuencia de Pago</label>
-            <InputSelect class="select-dark text-sm" @bind-Value="Simulacion.FrecuenciaPago">
-                <option value="@Frecuencia.Mensual">Mensual</option>
-                <option value="@Frecuencia.Bimestral">Bimestral</option>
-                <option value="@Frecuencia.Trimestral">Trimestral</option>
-                <option value="@Frecuencia.Semestral">Semestral</option>
-                <option value="@Frecuencia.Anual">Anual</option>
-            </InputSelect>
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Plazo (n)</label>
+                <InputNumber class="input-dark text-xs" @bind-Value="Simulacion.Plazo" min="1" placeholder="12" />
+                <ValidationMessage For="@(() => Simulacion.Plazo)" class="text-red-500 text-xs" />
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Frecuencia</label>
+                <InputSelect class="select-dark text-xs" @bind-Value="Simulacion.FrecuenciaPago">
+                    @foreach (var frecuencia in Enum.GetValues<Frecuencia>())
+                    {
+                        <option value="@frecuencia">@frecuencia.ToString()</option>
+                    }
+                </InputSelect>
+            </div>
         </div>
     </div>
 </div>

@@ -1,4 +1,5 @@
 @using EconomicApp.Models.DTOs
+@using System.Globalization
 
 <div class="bg-slate-800 rounded-xl p-4 sm:p-6 border border-slate-700/50">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
@@ -24,24 +25,23 @@
         <table class="w-full min-w-[600px]">
             <thead>
                 <tr class="border-b border-slate-700">
-                    <th class="text-left py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">#</th>
-                    <th class="text-right py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold hidden sm:table-cell">Saldo Inicial</th>
+                    <th class="text-center py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Periodo</th>
+                    <th class="text-right py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Saldo</th>
                     <th class="text-right py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Interés</th>
-                    <th class="text-right py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold hidden sm:table-cell">Capital</th>
                     <th class="text-right py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Cuota</th>
-                    <th class="text-right py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold hidden sm:table-cell">Saldo Final</th>
+                    <th class="text-right py-3 px-2 sm:px-4 text-emerald-500 text-xs uppercase tracking-wider font-semibold">Amortización</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var cuota in Cuotas)
                 {
-                    <tr class="border-b border-slate-700/30 hover:bg-emerald-500/5 transition-colors">
+                    var esUltimaFila = cuota == Cuotas.Last();
+                    <tr class="border-b border-slate-700/30 hover:bg-emerald-500/5 transition-colors @(cuota.NumeroPeriodo == 0 ? "bg-emerald-500/5" : "") @(esUltimaFila ? "bg-red-500/10" : "")">
                         <td class="py-3 px-2 sm:px-4 text-center font-bold text-sm">@cuota.NumeroPeriodo</td>
-                        <td class="py-3 px-2 sm:px-4 text-right text-sm hidden sm:table-cell text-slate-300">@cuota.SaldoInicial.ToString("N2")</td>
-                        <td class="py-3 px-2 sm:px-4 text-right text-sm text-slate-300">@cuota.Interes.ToString("N2")</td>
-                        <td class="py-3 px-2 sm:px-4 text-right text-sm hidden sm:table-cell text-slate-300">@cuota.AbonoCapital.ToString("N2")</td>
-                        <td class="py-3 px-2 sm:px-4 text-right font-bold text-emerald-500 text-sm">@cuota.ValorCuota.ToString("N2")</td>
-                        <td class="py-3 px-2 sm:px-4 text-right text-sm hidden sm:table-cell">@cuota.SaldoFinal.ToString("N2")</td>
+                        <td class="py-3 px-2 sm:px-4 text-right text-sm text-slate-300">@Formatear(ObtenerSaldo(cuota))</td>
+                        <td class="py-3 px-2 sm:px-4 text-right text-sm text-slate-300">@Formatear(cuota.Interes)</td>
+                        <td class="py-3 px-2 sm:px-4 text-right font-bold text-emerald-500 text-sm">@Formatear(cuota.ValorCuota)</td>
+                        <td class="py-3 px-2 sm:px-4 text-right text-sm text-slate-300">@Formatear(cuota.AbonoCapital)</td>
                     </tr>
                 }
             </tbody>
@@ -52,4 +52,14 @@
 @code {
     [Parameter] public List<CuotaDto> Cuotas { get; set; } = new();
     [Parameter] public EventCallback<FormatoExportacion> OnExport { get; set; }
+
+    private decimal ObtenerSaldo(CuotaDto cuota)
+    {
+        return cuota.SaldoFinal;
+    }
+
+    private string Formatear(decimal valor)
+    {
+        return valor.ToString("N2", CultureInfo.CreateSpecificCulture("es-CO"));
+    }
 }
