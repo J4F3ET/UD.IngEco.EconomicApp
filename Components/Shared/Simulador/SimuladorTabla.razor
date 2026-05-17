@@ -88,6 +88,12 @@
                 </div>
             </div>
         }
+        @if (MensajeError != null){
+            <div class="mt-2 text-red-400 text-sm flex items-center gap-1">
+                <i class="bi bi-exclamation-circle"></i>
+                @MensajeError
+            </div>
+        }
     </div>
 </div>
 
@@ -109,6 +115,7 @@
     private int? PeriodoSeleccionado;
     private decimal ValorAbono;
     private TipoRecalculo TipoRecalculoSeleccionado;
+    private string? MensajeError;
     
     private void SeleccionarPeriodo(CuotaDto cuota)
     {
@@ -121,6 +128,18 @@
     private async Task AplicarAbono(){
         if (CuotaSeleccionada == null)
             return;
+
+        if (TipoRecalculoSeleccionado == TipoRecalculo.AbonarCapital){
+            if (ValorAbono <= 0) {
+                MensajeError = "El abono debe ser mayor a cero";
+                return;
+            }
+            if (ValorAbono > CuotaSeleccionada.SaldoFinal) {
+                MensajeError = $"El abono no puede superar el saldo de {Formatear(CuotaSeleccionada.SaldoFinal)}";
+                return;
+            }
+        }
+        MensajeError = null;
 
         await OnRecalcular.InvokeAsync(new RecalculoRequestDto
         {
