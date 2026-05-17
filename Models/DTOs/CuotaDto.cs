@@ -8,4 +8,7 @@ public class CuotaDto
     public decimal AbonoCapital { get; set; }
     public decimal ValorCuota { get; set; }
     public decimal SaldoFinal { get; set; }
+    public decimal AbonoExtraordinario { get; set; } = 0;
+    public decimal ValorCuotaMostrado => ValorCuota + AbonoExtraordinario;
+    public decimal AbonoCapitalMostrado => AbonoCapital + AbonoExtraordinario;
 }

@@ -40,7 +40,7 @@
         <div class="mt-8 space-y-6 animate-fadeIn">
             <SimuladorResumen Resultado="@resultadoAmortizacion" Monto="@simulacion.MontoPrestamo" />
             <SimuladorFlujoCaja Cuotas="@resultadoAmortizacion.TablaAmortizacion" MontoPrestamo="@simulacion.MontoPrestamo" />
-            <SimuladorTabla Cuotas="@resultadoAmortizacion.TablaAmortizacion" OnExport="Exportar" />
+            <SimuladorTabla Cuotas="@resultadoAmortizacion.TablaAmortizacion" OnExport="Exportar"  OnRecalcular="RecalcularTabla" />
         </div>
     }
 
@@ -125,5 +125,23 @@
         {
             mensajeError = $"Error al exportar: {ex.Message}";
         }
+    }
+    private async Task RecalcularTabla(RecalculoRequestDto request)
+    {
+        var resultado = AmortizacionService.RecalcularDesdePeriodo(
+        resultadoAmortizacion.TablaAmortizacion,
+        request.Periodo,
+        request.ValorAbono,
+        request.Tipo,
+        amortizacion.TasaEfectivaPeriodica,
+        amortizacion.SistemaAmortizacion);
+
+        resultadoAmortizacion = new AmortizacionResponseDto{
+            TablaAmortizacion = resultado.TablaAmortizacion,
+            TotalInteresesPagados = resultado.TotalInteresesPagados,
+            TotalPagado = resultado.TotalPagado
+        };
+
+        await InvokeAsync(StateHasChanged);
     }
 }

@@ -36,22 +36,65 @@
                 @foreach (var cuota in Cuotas)
                 {
                     var esUltimaFila = cuota == Cuotas.Last();
-                    <tr class="border-b border-slate-700/30 hover:bg-emerald-500/5 transition-colors @(cuota.NumeroPeriodo == 0 ? "bg-emerald-500/5" : "") @(esUltimaFila ? "bg-red-500/10" : "")">
+                    <tr class="border-b border-slate-700/30 hover:bg-emerald-500/5 transition-colors cursor-pointer
+                        @(PeriodoSeleccionado == cuota.NumeroPeriodo ? "bg-blue-500/20" : "")
+                        @(cuota.NumeroPeriodo == 0 ? "bg-emerald-500/5" : "")
+                        @(esUltimaFila ? "bg-red-500/10" : "")"
+                        @onclick="() => SeleccionarPeriodo(cuota)">
                         <td class="py-3 px-2 sm:px-4 text-center font-bold text-sm">@cuota.NumeroPeriodo</td>
                         <td class="py-3 px-2 sm:px-4 text-right text-sm text-slate-300">@Formatear(ObtenerSaldo(cuota))</td>
                         <td class="py-3 px-2 sm:px-4 text-right text-sm text-slate-300">@Formatear(cuota.Interes)</td>
-                        <td class="py-3 px-2 sm:px-4 text-right font-bold text-emerald-500 text-sm">@Formatear(cuota.ValorCuota)</td>
-                        <td class="py-3 px-2 sm:px-4 text-right text-sm text-slate-300">@Formatear(cuota.AbonoCapital)</td>
+                        <td class="py-3 px-2 sm:px-4 text-right font-bold text-emerald-500 text-sm">@Formatear(cuota.ValorCuotaMostrado)</td>
+                        <td class="py-3 px-2 sm:px-4 text-right text-sm text-slate-300">@Formatear(cuota.AbonoCapitalMostrado)</td>
                     </tr>
-                }
+                }                
             </tbody>
         </table>
+        @if (CuotaSeleccionada != null){ 
+            <div class="mt-6 bg-slate-900 rounded-xl p-4 border border-slate-700">
+                <h6 class="text-emerald-400 font-bold mb-4">
+                    Recalcular desde período @CuotaSeleccionada.NumeroPeriodo
+                </h6>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    @if (TipoRecalculoSeleccionado != TipoRecalculo.RecalcularCuota){
+                        <div>
+                            <label class="text-sm text-slate-400">Valor abono</label>
+                            <input type="number"
+                                class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-white"
+                                @bind="ValorAbono" />
+                        </div>
+                    }
+                    <div>
+                        <label class="text-sm text-slate-400">Tipo</label>
+                        <select class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-white"
+                                @bind="TipoRecalculoSeleccionado">
+                            <option value="@TipoRecalculo.AbonarCapital">
+                                Mantener cuota y reducir plazo
+                            </option>
+                            <option value="@TipoRecalculo.RecalcularCuota">
+                                Mantener plazo y reducir cuota
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-end">
+                        <button class="w-full bg-blue-500 hover:bg-blue-400 text-white font-bold py-3 rounded-lg"
+                                @onclick="AplicarAbono">
+                            Aplicar
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        }
     </div>
 </div>
 
 @code {
     [Parameter] public List<CuotaDto> Cuotas { get; set; } = new();
     [Parameter] public EventCallback<FormatoExportacion> OnExport { get; set; }
+    [Parameter] public EventCallback<RecalculoRequestDto> OnRecalcular { get; set; }
 
     private decimal ObtenerSaldo(CuotaDto cuota)
     {
@@ -62,4 +105,28 @@
     {
         return valor.ToString("N2", CultureInfo.CreateSpecificCulture("es-CO"));
     }
-}
+    private CuotaDto? CuotaSeleccionada;
+    private int? PeriodoSeleccionado;
+    private decimal ValorAbono;
+    private TipoRecalculo TipoRecalculoSeleccionado;
+    
+    private void SeleccionarPeriodo(CuotaDto cuota)
+    {
+        if (cuota.NumeroPeriodo == 0)
+            return;
+
+        CuotaSeleccionada = cuota;
+        PeriodoSeleccionado = cuota.NumeroPeriodo;
+    }
+    private async Task AplicarAbono(){
+        if (CuotaSeleccionada == null)
+            return;
+
+        await OnRecalcular.InvokeAsync(new RecalculoRequestDto
+        {
+            Periodo = CuotaSeleccionada.NumeroPeriodo,
+            ValorAbono = TipoRecalculoSeleccionado == TipoRecalculo.RecalcularCuota ? 0 : ValorAbono,
+            Tipo = TipoRecalculoSeleccionado
+        });
+    }
+    }

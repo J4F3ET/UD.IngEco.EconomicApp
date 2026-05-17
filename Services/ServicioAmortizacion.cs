@@ -163,5 +163,179 @@ namespace EconomicApp.Services
                 });
             }
         }
+        public AmortizacionResponseDto RecalcularDesdePeriodo(List<CuotaDto> tablaOriginal, int periodo, decimal abono,TipoRecalculo tipo, decimal tasa, SistemaAmortizacion sistema){
+            var nuevaTabla = new List<CuotaDto>();
+
+            var cuotasAnteriores = tipo == TipoRecalculo.RecalcularCuota
+                ? tablaOriginal.Where(x => x.NumeroPeriodo < periodo).ToList()
+                : tablaOriginal.Where(x => x.NumeroPeriodo <= periodo).ToList();
+            
+            //var cuotasAnteriores = tablaOriginal.Where(x => x.NumeroPeriodo <= periodo).ToList();
+
+            nuevaTabla.AddRange(cuotasAnteriores);
+
+            var cuotaBase = tablaOriginal.First(x => x.NumeroPeriodo == periodo);
+
+            decimal nuevoSaldo = tipo == TipoRecalculo.RecalcularCuota
+                ? cuotaBase.SaldoFinal
+                : cuotaBase.SaldoFinal - abono;
+
+            if (nuevoSaldo < 0)
+                nuevoSaldo = 0;
+
+            int cuotasRestantes = tipo == TipoRecalculo.RecalcularCuota
+                ? tablaOriginal.Count - periodo
+                : tablaOriginal.Count - periodo - 1;
+            
+            //int cuotasRestantes = tablaOriginal.Count - periodo - 1;
+            Console.WriteLine($"DEBUG cuotasRestantes: {cuotasRestantes}");
+            Console.WriteLine($"DEBUG nuevaTabla antes de generar: {nuevaTabla.Count}");
+
+            // Metodo 1:
+            // Reducir cuota
+            if (tipo == TipoRecalculo.RecalcularCuota){
+                Console.WriteLine($"DEBUG - periodo: {periodo}");
+                Console.WriteLine($"DEBUG - SaldoInicial: {cuotaBase.SaldoInicial}");
+                Console.WriteLine($"DEBUG - cuotasRestantes: {cuotasRestantes}");
+                Console.WriteLine($"DEBUG - tablaOriginal.Count: {tablaOriginal.Count}");
+                if (sistema == SistemaAmortizacion.Frances)
+                    GenerarFrances(nuevaTabla, nuevoSaldo, tasa, cuotasRestantes);
+                else
+                    GenerarAleman(nuevaTabla, nuevoSaldo, tasa, cuotasRestantes);
+            }
+            // Metodo 2:
+            // Mantener cuota y reducir plazo
+            else{
+                if (abono > 0)
+                {
+                    var cuotaPeriodo = nuevaTabla.First(x => x.NumeroPeriodo == periodo);
+                    cuotaPeriodo.AbonoExtraordinario = abono;
+                    cuotaPeriodo.SaldoFinal = Math.Round(nuevoSaldo, DECIMALES_PRECISION);
+                }
+
+                decimal cuotaOriginal = tablaOriginal
+                    .First(x => x.NumeroPeriodo == periodo + 1)
+                    .ValorCuota;
+
+                if (sistema == SistemaAmortizacion.Frances)
+                    GenerarFrancesConCuotaFija(nuevaTabla, nuevoSaldo, tasa, cuotaOriginal);
+                else
+                    GenerarAlemanConCuotaFija(nuevaTabla, nuevoSaldo, tasa, cuotaOriginal);
+            }
+
+            return new AmortizacionResponseDto{
+                TablaAmortizacion = nuevaTabla,
+                TotalInteresesPagados = nuevaTabla.Sum(x => x.Interes),
+                TotalPagado = nuevaTabla.Sum(x => x.ValorCuota + x.AbonoExtraordinario)
+            };
+        }
+        private void GenerarFrancesConCuotaFija(
+            List<CuotaDto> tabla,
+            decimal saldoInicial,
+            decimal tasa,
+            decimal cuotaFija)
+        {
+            decimal saldo = Math.Round(saldoInicial, DECIMALES_PRECISION);
+
+            while (saldo > 0)
+            {
+                int periodoActual = tabla.Count;
+
+                decimal saldoPeriodo = saldo;
+
+                decimal interes = Math.Round(
+                    saldoPeriodo * tasa,
+                    DECIMALES_PRECISION);
+
+                decimal amortizacion = Math.Round(
+                    cuotaFija - interes,
+                    DECIMALES_PRECISION);
+
+                decimal cuotaActual = cuotaFija;
+
+                // Protección:
+                // Si la cuota ya supera el saldo restante
+                // cerramos completamente el crédito
+
+                if (amortizacion >= saldoPeriodo)
+                {
+                    amortizacion = saldoPeriodo;
+
+                    cuotaActual = Math.Round(
+                        amortizacion + interes,
+                        DECIMALES_PRECISION);
+
+                    saldo = 0;
+                }
+                else
+                {
+                    saldo = Math.Round(
+                        saldoPeriodo - amortizacion,
+                        DECIMALES_PRECISION);
+                }
+
+                tabla.Add(new CuotaDto
+                {
+                    NumeroPeriodo = periodoActual,
+                    SaldoInicial = saldoPeriodo,
+                    Interes = interes,
+                    AbonoCapital = amortizacion,
+                    ValorCuota = cuotaActual,
+                    SaldoFinal = saldo
+                });
+            }
+        }
+        private void GenerarAlemanConCuotaFija(
+            List<CuotaDto> tabla,
+            decimal saldoInicial,
+            decimal tasa,
+            decimal cuotaFija)
+        {
+            decimal saldo = saldoInicial;
+
+            while (saldo > 0)
+            {
+                int periodoActual = tabla.Count;
+
+                decimal saldoPeriodo = saldo;
+
+                decimal interes = Math.Round(
+                    saldoPeriodo * tasa,
+                    DECIMALES_PRECISION);
+
+                decimal amortizacion = Math.Round(
+                    cuotaFija - interes,
+                    DECIMALES_PRECISION);
+
+                decimal cuotaActual = cuotaFija;
+
+                if (amortizacion >= saldoPeriodo)
+                {
+                    amortizacion = saldoPeriodo;
+
+                    cuotaActual = Math.Round(
+                        amortizacion + interes,
+                        DECIMALES_PRECISION);
+
+                    saldo = 0;
+                }
+                else
+                {
+                    saldo = Math.Round(
+                        saldoPeriodo - amortizacion,
+                        DECIMALES_PRECISION);
+                }
+
+                tabla.Add(new CuotaDto
+                {
+                    NumeroPeriodo = periodoActual,
+                    SaldoInicial = saldoPeriodo,
+                    Interes = interes,
+                    AbonoCapital = amortizacion,
+                    ValorCuota = cuotaActual,
+                    SaldoFinal = saldo
+                });
+            }
+        }
     }
 }
